@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      return_items: {
+        Row: {
+          brand_name: string
+          canon_printer_sn: string | null
+          created_at: string
+          id: string
+          keyboard: string | null
+          mouse: string | null
+          other_1: string | null
+          other_2: string | null
+          receipt_printer_sn: string | null
+          receiver_signature: string | null
+          return_date: string
+          shop_location: string | null
+          store_code: string | null
+          updated_at: string
+          usb_hub: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_name: string
+          canon_printer_sn?: string | null
+          created_at?: string
+          id?: string
+          keyboard?: string | null
+          mouse?: string | null
+          other_1?: string | null
+          other_2?: string | null
+          receipt_printer_sn?: string | null
+          receiver_signature?: string | null
+          return_date: string
+          shop_location?: string | null
+          store_code?: string | null
+          updated_at?: string
+          usb_hub?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_name?: string
+          canon_printer_sn?: string | null
+          created_at?: string
+          id?: string
+          keyboard?: string | null
+          mouse?: string | null
+          other_1?: string | null
+          other_2?: string | null
+          receipt_printer_sn?: string | null
+          receiver_signature?: string | null
+          return_date?: string
+          shop_location?: string | null
+          store_code?: string | null
+          updated_at?: string
+          usb_hub?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
