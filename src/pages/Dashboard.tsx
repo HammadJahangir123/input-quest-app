@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Plus } from "lucide-react";
+import { LogOut, Plus, Download, Upload, Filter, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { ReturnItemForm } from "@/components/ReturnItemForm";
 import { ReturnItemsTable } from "@/components/ReturnItemsTable";
 import { SearchBar } from "@/components/SearchBar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Separator } from "@/components/ui/separator";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -48,41 +51,90 @@ const Dashboard = () => {
     toast.success("Return item saved successfully!");
   };
 
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+    toast.success("Data refreshed");
+  };
+
   if (!session) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Shop Return Item Tracker</h1>
-          <Button variant="outline" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-muted/10">
+        <AppSidebar />
+        
+        <div className="flex-1 flex flex-col">
+          {/* Top Application Bar */}
+          <header className="sticky top-0 z-10 bg-background border-b">
+            <div className="flex h-14 items-center gap-4 px-4">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="h-6" />
+              <h1 className="text-sm font-semibold">Return Item Management</h1>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          {/* Toolbar */}
+          <div className="bg-background border-b">
+            <div className="flex items-center gap-2 px-4 py-3">
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+              <Separator orientation="vertical" className="h-8" />
+              <Button
+                variant={showForm ? "secondary" : "default"}
+                size="sm"
+                onClick={() => setShowForm(!showForm)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleRefresh}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              <Button variant="outline" size="sm">
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </Button>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                Filter
+              </Button>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto p-4 space-y-4">
+            {showForm && (
+              <ReturnItemForm 
+                onSuccess={handleFormSuccess}
+                onCancel={() => setShowForm(false)}
+              />
+            )}
+
+            <ReturnItemsTable searchQuery={searchQuery} key={refreshKey} />
+          </main>
+
+          {/* Status Bar */}
+          <footer className="bg-background border-t px-4 py-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Ready</span>
+              <span>{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</span>
+            </div>
+          </footer>
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8 space-y-6">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <Button onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            {showForm ? "Hide Form" : "Add Return Item"}
-          </Button>
-        </div>
-
-        {showForm && (
-          <ReturnItemForm 
-            onSuccess={handleFormSuccess}
-            onCancel={() => setShowForm(false)}
-          />
-        )}
-
-        <ReturnItemsTable searchQuery={searchQuery} key={refreshKey} />
-      </main>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 

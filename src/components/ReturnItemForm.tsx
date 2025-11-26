@@ -109,15 +109,18 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Return Item</CardTitle>
+    <Card className="border-l-4 border-l-primary">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold">Create Return Item</CardTitle>
+          <span className="text-xs text-muted-foreground">* Required fields</span>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="return_date">Return Date *</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="return_date" className="text-xs font-medium">Return Date *</Label>
               <Input
                 id="return_date"
                 type="date"
@@ -125,127 +128,139 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
                 onChange={(e) => handleChange("return_date", e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="brand_name">Brand Name *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="brand_name" className="text-xs font-medium">Brand Name *</Label>
               <Input
                 id="brand_name"
                 value={formData.brand_name}
                 onChange={(e) => handleChange("brand_name", e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="store_code">Store Code</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="store_code" className="text-xs font-medium">Store Code</Label>
               <Input
                 id="store_code"
                 value={formData.store_code}
                 onChange={(e) => handleChange("store_code", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="shop_location">Shop Location</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="shop_location" className="text-xs font-medium">Shop Location</Label>
               <Input
                 id="shop_location"
                 value={formData.shop_location}
                 onChange={(e) => handleChange("shop_location", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="canon_printer_sn">Canon Printer S/N</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="canon_printer_sn" className="text-xs font-medium">Canon Printer S/N</Label>
               <Input
                 id="canon_printer_sn"
                 value={formData.canon_printer_sn}
                 onChange={(e) => handleChange("canon_printer_sn", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="receipt_printer_sn">Receipt Printer S/N</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="receipt_printer_sn" className="text-xs font-medium">Receipt Printer S/N</Label>
               <Input
                 id="receipt_printer_sn"
                 value={formData.receipt_printer_sn}
                 onChange={(e) => handleChange("receipt_printer_sn", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="usb_hub">USB Hub</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="usb_hub" className="text-xs font-medium">USB Hub</Label>
               <Input
                 id="usb_hub"
                 value={formData.usb_hub}
                 onChange={(e) => handleChange("usb_hub", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="keyboard">Keyboard</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="keyboard" className="text-xs font-medium">Keyboard</Label>
               <Input
                 id="keyboard"
                 value={formData.keyboard}
                 onChange={(e) => handleChange("keyboard", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="mouse">Mouse</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="mouse" className="text-xs font-medium">Mouse</Label>
               <Input
                 id="mouse"
                 value={formData.mouse}
                 onChange={(e) => handleChange("mouse", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="other_1">Other</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="other_1" className="text-xs font-medium">Other</Label>
               <Input
                 id="other_1"
                 value={formData.other_1}
                 onChange={(e) => handleChange("other_1", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="other_2">Other</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="other_2" className="text-xs font-medium">Other</Label>
               <Input
                 id="other_2"
                 value={formData.other_2}
                 onChange={(e) => handleChange("other_2", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="receiver_signature">Receiver Signature/Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="receiver_signature" className="text-xs font-medium">Receiver Signature/Name</Label>
               <Input
                 id="receiver_signature"
                 value={formData.receiver_signature}
                 onChange={(e) => handleChange("receiver_signature", e.target.value)}
                 disabled={isLoading}
+                className="h-9"
               />
             </div>
           </div>
 
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          <div className="flex gap-2 justify-end pt-2 border-t">
+            <Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Return Item"}
+            <Button type="submit" size="sm" disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save"}
             </Button>
           </div>
         </form>
