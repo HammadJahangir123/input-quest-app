@@ -113,53 +113,60 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle>Return Items ({items.length})</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-semibold">Return Items Overview</CardTitle>
+            <span className="text-xs text-muted-foreground">{items.length} entries</span>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Return Date</TableHead>
-                  <TableHead>Brand Name</TableHead>
-                  <TableHead>Store Code</TableHead>
-                  <TableHead>Shop Location</TableHead>
-                  <TableHead>Canon Printer S/N</TableHead>
-                  <TableHead>Receipt Printer S/N</TableHead>
-                  <TableHead>USB Hub</TableHead>
-                  <TableHead>Keyboard</TableHead>
-                  <TableHead>Mouse</TableHead>
-                  <TableHead>Other</TableHead>
-                  <TableHead>Other</TableHead>
-                  <TableHead>Receiver</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="h-9 text-xs font-semibold">Return Date</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Brand</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Store Code</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Location</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Canon S/N</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Receipt S/N</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">USB Hub</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Keyboard</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Mouse</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Other 1</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Other 2</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Receiver</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="whitespace-nowrap">
+                {items.map((item, index) => (
+                  <TableRow 
+                    key={item.id}
+                    className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}
+                  >
+                    <TableCell className="whitespace-nowrap text-xs py-2">
                       {new Date(item.return_date).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{item.brand_name}</TableCell>
-                    <TableCell>{item.store_code || "-"}</TableCell>
-                    <TableCell>{item.shop_location || "-"}</TableCell>
-                    <TableCell>{item.canon_printer_sn || "-"}</TableCell>
-                    <TableCell>{item.receipt_printer_sn || "-"}</TableCell>
-                    <TableCell>{item.usb_hub || "-"}</TableCell>
-                    <TableCell>{item.keyboard || "-"}</TableCell>
-                    <TableCell>{item.mouse || "-"}</TableCell>
-                    <TableCell>{item.other_1 || "-"}</TableCell>
-                    <TableCell>{item.other_2 || "-"}</TableCell>
-                    <TableCell>{item.receiver_signature || "-"}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-xs py-2 font-medium">{item.brand_name}</TableCell>
+                    <TableCell className="text-xs py-2">{item.store_code || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.shop_location || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.canon_printer_sn || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.receipt_printer_sn || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.usb_hub || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.keyboard || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.mouse || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.other_1 || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.other_2 || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.receiver_signature || "-"}</TableCell>
+                    <TableCell className="text-right py-2">
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
+                        className="h-7 w-7 p-0"
                         onClick={() => setDeleteId(item.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
                       </Button>
                     </TableCell>
                   </TableRow>
