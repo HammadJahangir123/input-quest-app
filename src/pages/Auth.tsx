@@ -26,7 +26,7 @@ const Auth = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        navigate("/overview");
       }
     };
     checkSession();
@@ -43,7 +43,7 @@ const Auth = () => {
         email: validated.email,
         password: validated.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/overview`,
           data: {
             full_name: validated.fullName || "",
           },
@@ -83,7 +83,7 @@ const Auth = () => {
         toast.error(error.message);
       } else {
         toast.success("Signed in successfully!");
-        navigate("/dashboard");
+        navigate("/overview");
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
