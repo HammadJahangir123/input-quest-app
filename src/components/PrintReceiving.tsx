@@ -28,14 +28,14 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
     const printWindow = window.open('', '', 'width=800,height=600');
     if (!printWindow) return;
 
-    const returnedItems: string[] = [];
+    const returnedItems: Array<{ name: string; qty: number; serialNumber: string }> = [];
     
-    if (item.canon_printer_sn) returnedItems.push("Canon Printer");
-    if (item.receipt_printer_sn) returnedItems.push("Receipt Printer");
-    if (item.usb_hub) returnedItems.push("USB Hub");
-    if (item.keyboard) returnedItems.push("Keyboard");
-    if (item.mouse) returnedItems.push("Mouse");
-    if (item.scanner) returnedItems.push("Scanner");
+    if (item.canon_printer_sn) returnedItems.push({ name: "Canon Printer", qty: 1, serialNumber: item.canon_printer_sn });
+    if (item.receipt_printer_sn) returnedItems.push({ name: "Receipt Printer", qty: 1, serialNumber: item.receipt_printer_sn });
+    if (item.usb_hub) returnedItems.push({ name: "USB Hub", qty: 1, serialNumber: item.usb_hub });
+    if (item.keyboard) returnedItems.push({ name: "Keyboard", qty: 1, serialNumber: item.keyboard });
+    if (item.mouse) returnedItems.push({ name: "Mouse", qty: 1, serialNumber: item.mouse });
+    if (item.scanner) returnedItems.push({ name: "Scanner", qty: 1, serialNumber: item.scanner });
 
     const printContent = `
       <!DOCTYPE html>
@@ -79,15 +79,26 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
             .value {
               flex: 1;
             }
-            .items-list {
+            .items-table {
+              width: 100%;
+              border-collapse: collapse;
               margin-top: 10px;
             }
-            .item {
-              padding: 8px;
+            .items-table th {
               background-color: #f5f5f5;
-              margin-bottom: 5px;
-              border-left: 3px solid #333;
-              padding-left: 15px;
+              padding: 10px;
+              text-align: left;
+              border: 1px solid #ddd;
+              font-weight: bold;
+              font-size: 14px;
+            }
+            .items-table td {
+              padding: 10px;
+              border: 1px solid #ddd;
+              font-size: 13px;
+            }
+            .items-table tr:nth-child(even) {
+              background-color: #fafafa;
             }
             .signature-section {
               margin-top: 50px;
@@ -144,12 +155,29 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
 
           <div class="section">
             <div class="section-title">Items Returned</div>
-            <div class="items-list">
-              ${returnedItems.length > 0 
-                ? returnedItems.map(itemName => `<div class="item">✓ ${itemName}</div>`).join('')
-                : '<div class="item">No items returned</div>'
-              }
-            </div>
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width: 10%;">No.</th>
+                  <th style="width: 40%;">Item Name</th>
+                  <th style="width: 15%;">QTY</th>
+                  <th style="width: 35%;">Serial Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${returnedItems.length > 0 
+                  ? returnedItems.map((item, index) => `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${item.name}</td>
+                      <td>${item.qty}</td>
+                      <td>${item.serialNumber}</td>
+                    </tr>
+                  `).join('')
+                  : '<tr><td colspan="4" style="text-align: center;">No items returned</td></tr>'
+                }
+              </tbody>
+            </table>
           </div>
 
           ${item.remark ? `
