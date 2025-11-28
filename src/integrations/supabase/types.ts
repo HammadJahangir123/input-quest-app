@@ -47,7 +47,9 @@ export type Database = {
           other_2: string | null
           receipt_printer_sn: string | null
           receiver_signature: string | null
+          remark: string | null
           return_date: string
+          scanner: string | null
           shop_location: string | null
           store_code: string | null
           updated_at: string
@@ -65,7 +67,9 @@ export type Database = {
           other_2?: string | null
           receipt_printer_sn?: string | null
           receiver_signature?: string | null
+          remark?: string | null
           return_date: string
+          scanner?: string | null
           shop_location?: string | null
           store_code?: string | null
           updated_at?: string
@@ -83,7 +87,9 @@ export type Database = {
           other_2?: string | null
           receipt_printer_sn?: string | null
           receiver_signature?: string | null
+          remark?: string | null
           return_date?: string
+          scanner?: string | null
           shop_location?: string | null
           store_code?: string | null
           updated_at?: string

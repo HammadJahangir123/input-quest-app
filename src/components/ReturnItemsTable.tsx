@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { PrintReceiving } from "./PrintReceiving";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +28,14 @@ interface ReturnItem {
   usb_hub: string | null;
   keyboard: string | null;
   mouse: string | null;
+  scanner: string | null;
   other_1: string | null;
   other_2: string | null;
   receiver_signature: string | null;
+  remark: string | null;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
 }
 
 interface ReturnItemsTableProps {
@@ -54,7 +60,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
         .order("return_date", { ascending: false });
 
       if (searchQuery) {
-        query = query.or(`brand_name.ilike.%${searchQuery}%,store_code.ilike.%${searchQuery}%,shop_location.ilike.%${searchQuery}%,receiver_signature.ilike.%${searchQuery}%`);
+        query = query.or(`brand_name.ilike.%${searchQuery}%,store_code.ilike.%${searchQuery}%,shop_location.ilike.%${searchQuery}%,receiver_signature.ilike.%${searchQuery}%,remark.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query;
@@ -133,9 +139,11 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
                   <TableHead className="h-9 text-xs font-semibold">USB Hub</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Keyboard</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Mouse</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Scanner</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Other 1</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Other 2</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Receiver</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Remark</TableHead>
                   <TableHead className="h-9 text-xs font-semibold text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -156,18 +164,23 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
                     <TableCell className="text-xs py-2">{item.usb_hub || "-"}</TableCell>
                     <TableCell className="text-xs py-2">{item.keyboard || "-"}</TableCell>
                     <TableCell className="text-xs py-2">{item.mouse || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.scanner || "-"}</TableCell>
                     <TableCell className="text-xs py-2">{item.other_1 || "-"}</TableCell>
                     <TableCell className="text-xs py-2">{item.other_2 || "-"}</TableCell>
                     <TableCell className="text-xs py-2">{item.receiver_signature || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.remark || "-"}</TableCell>
                     <TableCell className="text-right py-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        onClick={() => setDeleteId(item.id)}
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <PrintReceiving item={item} />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => setDeleteId(item.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
