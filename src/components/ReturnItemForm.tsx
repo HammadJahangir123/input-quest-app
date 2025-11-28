@@ -17,9 +17,11 @@ const returnItemSchema = z.object({
   usb_hub: z.string().trim().max(100).optional(),
   keyboard: z.string().trim().max(100).optional(),
   mouse: z.string().trim().max(100).optional(),
+  scanner: z.string().trim().max(100).optional(),
   other_1: z.string().trim().max(255).optional(),
   other_2: z.string().trim().max(255).optional(),
   receiver_signature: z.string().trim().max(255).optional(),
+  remark: z.string().trim().max(500).optional(),
 });
 
 interface ReturnItemFormProps {
@@ -39,9 +41,11 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
     usb_hub: "",
     keyboard: "",
     mouse: "",
+    scanner: "",
     other_1: "",
     other_2: "",
     receiver_signature: "",
+    remark: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,9 +72,11 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
           usb_hub: validated.usb_hub || null,
           keyboard: validated.keyboard || null,
           mouse: validated.mouse || null,
+          scanner: validated.scanner || null,
           other_1: validated.other_1 || null,
           other_2: validated.other_2 || null,
           receiver_signature: validated.receiver_signature || null,
+          remark: validated.remark || null,
           user_id: user.id,
         },
       ]);
@@ -87,9 +93,11 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
         usb_hub: "",
         keyboard: "",
         mouse: "",
+        scanner: "",
         other_1: "",
         other_2: "",
         receiver_signature: "",
+        remark: "",
       });
       
       onSuccess();
@@ -222,6 +230,17 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
             </div>
 
             <div className="space-y-1.5">
+              <Label htmlFor="scanner" className="text-xs font-medium">Scanner</Label>
+              <Input
+                id="scanner"
+                value={formData.scanner}
+                onChange={(e) => handleChange("scanner", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="other_1" className="text-xs font-medium">Other</Label>
               <Input
                 id="other_1"
@@ -249,6 +268,17 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
                 id="receiver_signature"
                 value={formData.receiver_signature}
                 onChange={(e) => handleChange("receiver_signature", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5 md:col-span-3">
+              <Label htmlFor="remark" className="text-xs font-medium">Remark</Label>
+              <Input
+                id="remark"
+                value={formData.remark}
+                onChange={(e) => handleChange("remark", e.target.value)}
                 disabled={isLoading}
                 className="h-9"
               />
