@@ -3,9 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit, Download } from "lucide-react";
 import { toast } from "sonner";
 import { PrintReceiving } from "./PrintReceiving";
+import { EditReturnItemForm } from "./EditReturnItemForm";
+import * as XLSX from "xlsx";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +48,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
   const [items, setItems] = useState<ReturnItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<ReturnItem | null>(null);
 
   useEffect(() => {
     fetchItems();
@@ -94,6 +97,31 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
     }
   };
 
+  const handleExportToExcel = () => {
+    const exportData = items.map(item => ({
+      "Return Date": new Date(item.return_date).toLocaleDateString(),
+      "Brand": item.brand_name,
+      "Store Code": item.store_code || "-",
+      "Location": item.shop_location || "-",
+      "Canon S/N": item.canon_printer_sn || "-",
+      "Receipt S/N": item.receipt_printer_sn || "-",
+      "USB Hub": item.usb_hub || "-",
+      "Keyboard": item.keyboard || "-",
+      "Mouse": item.mouse || "-",
+      "Scanner": item.scanner || "-",
+      "Other 1": item.other_1 || "-",
+      "Other 2": item.other_2 || "-",
+      "Receiver": item.receiver_signature || "-",
+      "Remark": item.remark || "-",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Return Items");
+    XLSX.writeFile(wb, `return_items_${new Date().toISOString().split('T')[0]}.xlsx`);
+    toast.success("Exported to Excel successfully");
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -122,7 +150,13 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-semibold">Return Items Overview</CardTitle>
-            <span className="text-xs text-muted-foreground">{items.length} entries</span>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleExportToExcel}>
+                <Download className="h-3.5 w-3.5 mr-2" />
+                Export to Excel
+              </Button>
+              <span className="text-xs text-muted-foreground">{items.length} entries</span>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -176,7 +210,17 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
                           variant="ghost"
                           size="sm"
                           className="h-7 w-7 p-0"
+                          onClick={() => setEditItem(item)}
+                          title="Edit"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
                           onClick={() => setDeleteId(item.id)}
+                          title="Delete"
                         >
                           <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
@@ -189,6 +233,13 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
           </div>
         </CardContent>
       </Card>
+
+      <EditReturnItemForm
+        item={editItem}
+        open={!!editItem}
+        onOpenChange={(open) => !open && setEditItem(null)}
+        onSuccess={fetchItems}
+      />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
