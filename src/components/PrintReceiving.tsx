@@ -60,19 +60,44 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
               padding: 40px;
               max-width: 800px;
               margin: 0 auto;
-              color: #000;
+              color: #333;
               background: #fff;
             }
-            .notice {
-              margin-bottom: 30px;
+            .header-date {
               font-size: 14px;
-              line-height: 1.6;
+              margin-bottom: 30px;
+            }
+            .main-title {
+              text-align: center;
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .subtitle {
+              text-align: center;
+              font-size: 16px;
+              margin-bottom: 30px;
+            }
+            .store-info {
+              margin-bottom: 30px;
+            }
+            .store-info-title {
+              font-weight: bold;
+              margin-bottom: 15px;
+              font-size: 15px;
+            }
+            .info-row {
+              margin-bottom: 10px;
+              font-size: 14px;
+            }
+            .info-label {
+              font-weight: bold;
             }
             .section-title {
               font-weight: bold;
               font-size: 15px;
               margin-bottom: 15px;
-              margin-top: 25px;
+              margin-top: 30px;
             }
             .items-table {
               width: 100%;
@@ -82,8 +107,8 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
             }
             .items-table th,
             .items-table td {
-              border: 1px solid #000;
-              padding: 8px;
+              border: 1px solid #333;
+              padding: 10px;
               text-align: left;
               font-size: 13px;
             }
@@ -92,7 +117,7 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
               font-weight: bold;
             }
             .remark-section {
-              margin-top: 20px;
+              margin-top: 25px;
               margin-bottom: 30px;
             }
             .remark-label {
@@ -105,9 +130,10 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
               font-size: 13px;
             }
             .status-text {
-              margin-top: 20px;
+              margin-top: 25px;
               margin-bottom: 40px;
               font-size: 14px;
+              font-weight: 500;
             }
             .signature-section {
               display: flex;
@@ -122,36 +148,50 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
               margin-bottom: 20px;
             }
             .signature-label {
-              display: block;
+              display: inline-block;
               margin-bottom: 5px;
               font-size: 13px;
             }
             .signature-input {
-              border-bottom: 1px solid #000;
+              border-bottom: 1px solid #333;
               min-height: 30px;
               margin-bottom: 15px;
+              display: inline-block;
+              width: 200px;
+              margin-left: 10px;
             }
             .name-label {
-              display: block;
+              display: inline-block;
               margin-bottom: 5px;
               font-size: 13px;
             }
             .name-input {
-              border-bottom: 1px solid #000;
+              border-bottom: 1px solid #333;
               min-height: 25px;
               margin-bottom: 10px;
+              display: inline-block;
+              width: 200px;
+              margin-left: 10px;
             }
             .role-label {
               font-size: 12px;
               display: block;
+              margin-top: 5px;
             }
             .footer {
               margin-top: 60px;
               text-align: center;
-              font-size: 11px;
+              font-size: 12px;
               color: #666;
               border-top: 1px solid #ddd;
               padding-top: 20px;
+            }
+            .footer-copyright {
+              margin-bottom: 5px;
+            }
+            .footer-powered {
+              font-weight: bold;
+              color: #333;
             }
             @media print {
               body {
@@ -161,12 +201,28 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
           </style>
         </head>
         <body>
-          <div class="notice">
-            Kindly <strong>format</strong> change the return data "<strong>${formatDate(item.return_date)}</strong>"
+          <div class="header-date">${formatDate(item.return_date)}</div>
+
+          <div class="main-title">Return Item Receiving Report</div>
+          <div class="subtitle">Shop Return Management System</div>
+
+          <div class="store-info">
+            <div class="store-info-title">Store Information:</div>
+            <div class="info-row">
+              <span class="info-label">Brand Name:</span> ${item.brand_name}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Store Code:</span> ${item.store_code || 'N/A'}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Shop Location:</span> ${item.shop_location || 'N/A'}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Return Date:</span> ${formatDate(item.return_date)}
+            </div>
           </div>
 
           <div class="section-title">Item returned</div>
-          <div style="border-bottom: 1px solid #000; width: 30px; margin-bottom: 15px;"></div>
 
           <table class="items-table">
             <thead>
@@ -202,31 +258,27 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
           <div class="signature-section">
             <div class="signature-box">
               <div class="signature-line">
-                <span class="signature-label">Sign</span>
-                <div class="signature-input">${item.receiver_signature || ''}</div>
+                <span class="signature-label">Sign</span><span class="signature-input">${item.receiver_signature || ''}</span>
               </div>
               <div>
-                <span class="name-label">Name:</span>
-                <div class="name-input"></div>
-                <span class="role-label">(Shop Support Depositor <span style="color: blue;">Signature</span>)</span>
+                <span class="name-label">Name:</span><span class="name-input"></span>
               </div>
+              <span class="role-label">(Shop Support Depositor <span style="text-decoration: underline;">Signature</span>)</span>
             </div>
             <div class="signature-box">
               <div class="signature-line">
-                <span class="signature-label">Sign</span>
-                <div class="signature-input"></div>
+                <span class="signature-label">Sign</span><span class="signature-input"></span>
               </div>
               <div>
-                <span class="name-label">Name</span>
-                <div class="name-input"></div>
-                <span class="role-label">(IT Store Receiver)</span>
+                <span class="name-label">Name</span><span class="name-input"></span>
               </div>
+              <span class="role-label">(IT Store Receiver)</span>
             </div>
           </div>
 
           <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} All Rights Reserved | Powered by <strong>Hammad Jahangir</strong></p>
-            <p style="margin-top: 10px; font-size: 10px;">Report ID: ${item.id}</p>
+            <div class="footer-copyright">Copyright &copy; ${new Date().getFullYear()} Shop Return Management System. All Rights Reserved.</div>
+            <div class="footer-powered">Powered by Hammad Jahangir</div>
           </div>
 
           <script>
@@ -262,38 +314,50 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
           <DialogTitle>Print Preview - Return Receipt</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 p-6 bg-background border rounded-lg">
-          <div className="text-sm">
-            Kindly <strong>format</strong> change the return data "<strong>{formatDate(item.return_date)}</strong>"
+        <div className="space-y-6 p-8 bg-background border rounded-lg">
+          <div className="text-sm text-muted-foreground">{formatDate(item.return_date)}</div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-center mb-2">Return Item Receiving Report</h2>
+            <p className="text-center text-base mb-6">Shop Return Management System</p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="font-semibold">Store Information:</div>
+            <div className="space-y-2 text-sm">
+              <div><span className="font-semibold">Brand Name:</span> {item.brand_name}</div>
+              <div><span className="font-semibold">Store Code:</span> {item.store_code || 'N/A'}</div>
+              <div><span className="font-semibold">Shop Location:</span> {item.shop_location || 'N/A'}</div>
+              <div><span className="font-semibold">Return Date:</span> {formatDate(item.return_date)}</div>
+            </div>
           </div>
 
           <div>
-            <div className="font-semibold text-base mb-2">Item returned</div>
-            <div className="border-b-2 border-foreground w-8 mb-4"></div>
+            <div className="font-semibold text-base mb-4 mt-6">Item returned</div>
 
             <div className="border rounded-md overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="border p-2 text-left w-[10%]">No</th>
-                    <th className="border p-2 text-left w-[40%]">Item Name</th>
-                    <th className="border p-2 text-left w-[15%]">QTY</th>
-                    <th className="border p-2 text-left w-[35%]">Serial Number</th>
+                    <th className="border p-3 text-left w-[10%]">No</th>
+                    <th className="border p-3 text-left w-[40%]">Item Name</th>
+                    <th className="border p-3 text-left w-[15%]">QTY</th>
+                    <th className="border p-3 text-left w-[35%]">Serial Number</th>
                   </tr>
                 </thead>
                 <tbody>
                   {returnedItems.length > 0 ? (
                     returnedItems.map((item, index) => (
                       <tr key={index}>
-                        <td className="border p-2">{index + 1}</td>
-                        <td className="border p-2">{item.name}</td>
-                        <td className="border p-2">{item.qty}</td>
-                        <td className="border p-2">{item.serialNumber}</td>
+                        <td className="border p-3">{index + 1}</td>
+                        <td className="border p-3">{item.name}</td>
+                        <td className="border p-3">{item.qty}</td>
+                        <td className="border p-3">{item.serialNumber}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="border p-2 text-center text-muted-foreground">
+                      <td colSpan={4} className="border p-3 text-center text-muted-foreground">
                         No items returned
                       </td>
                     </tr>
@@ -303,45 +367,47 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
             </div>
           </div>
 
-          <div>
+          <div className="mt-6">
             <div className="font-semibold mb-2">Remark :</div>
             <div className="text-sm min-h-[40px]">{item.remark || ''}</div>
           </div>
 
-          <div className="font-medium">Shop Closed</div>
+          <div className="font-medium mt-6">Shop Closed</div>
 
           <div className="grid grid-cols-2 gap-8 mt-12">
             <div>
-              <div className="mb-2">
+              <div className="mb-4">
                 <span className="text-sm">Sign</span>
-                <div className="border-b border-foreground min-h-[30px] mb-4">
+                <span className="border-b border-foreground min-h-[30px] inline-block w-48 ml-2 align-bottom">
                   {item.receiver_signature || ''}
-                </div>
+                </span>
               </div>
               <div>
                 <span className="text-sm">Name:</span>
-                <div className="border-b border-foreground min-h-[25px] mb-2"></div>
-                <span className="text-xs text-muted-foreground">
-                  (Shop Support Depositor <span className="text-blue-600">Signature</span>)
-                </span>
+                <span className="border-b border-foreground min-h-[25px] inline-block w-48 ml-2 align-bottom"></span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-2">
+                (Shop Support Depositor <span className="underline">Signature</span>)
               </div>
             </div>
             <div>
-              <div className="mb-2">
+              <div className="mb-4">
                 <span className="text-sm">Sign</span>
-                <div className="border-b border-foreground min-h-[30px] mb-4"></div>
+                <span className="border-b border-foreground min-h-[30px] inline-block w-48 ml-2 align-bottom"></span>
               </div>
               <div>
                 <span className="text-sm">Name</span>
-                <div className="border-b border-foreground min-h-[25px] mb-2"></div>
-                <span className="text-xs text-muted-foreground">(IT Store Receiver)</span>
+                <span className="border-b border-foreground min-h-[25px] inline-block w-48 ml-2 align-bottom"></span>
               </div>
+              <div className="text-xs text-muted-foreground mt-2">(IT Store Receiver)</div>
             </div>
           </div>
 
-          <div className="mt-12 pt-4 border-t text-center text-xs text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} All Rights Reserved | Powered by <strong>Hammad Jahangir</strong></p>
-            <p className="mt-2 text-[10px]">Report ID: {item.id}</p>
+          <div className="mt-12 pt-4 border-t text-center">
+            <p className="text-xs text-muted-foreground mb-1">
+              Copyright &copy; {new Date().getFullYear()} Shop Return Management System. All Rights Reserved.
+            </p>
+            <p className="text-sm font-semibold">Powered by Hammad Jahangir</p>
           </div>
         </div>
 
