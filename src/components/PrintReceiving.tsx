@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { Printer, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface ReturnItem {
   id: string;
@@ -24,26 +26,28 @@ interface PrintReceivingProps {
 }
 
 export const PrintReceiving = ({ item }: PrintReceivingProps) => {
+  const [open, setOpen] = useState(false);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const returnedItems: Array<{ name: string; qty: number; serialNumber: string }> = [];
+  
+  if (item.canon_printer_sn) returnedItems.push({ name: "Canon Printer", qty: 1, serialNumber: item.canon_printer_sn });
+  if (item.receipt_printer_sn) returnedItems.push({ name: "Receipt Printer", qty: 1, serialNumber: item.receipt_printer_sn });
+  if (item.usb_hub) returnedItems.push({ name: "USB Hub", qty: 1, serialNumber: item.usb_hub });
+  if (item.keyboard) returnedItems.push({ name: "Keyboard", qty: 1, serialNumber: item.keyboard });
+  if (item.mouse) returnedItems.push({ name: "Mouse", qty: 1, serialNumber: item.mouse });
+  if (item.scanner) returnedItems.push({ name: "Scanner", qty: 1, serialNumber: item.scanner });
+
   const handlePrint = () => {
     const printWindow = window.open('', '', 'width=800,height=600');
     if (!printWindow) return;
-
-    const returnedItems: Array<{ name: string; qty: number; serialNumber: string }> = [];
-    
-    if (item.canon_printer_sn) returnedItems.push({ name: "Canon Printer", qty: 1, serialNumber: item.canon_printer_sn });
-    if (item.receipt_printer_sn) returnedItems.push({ name: "Receipt Printer", qty: 1, serialNumber: item.receipt_printer_sn });
-    if (item.usb_hub) returnedItems.push({ name: "USB Hub", qty: 1, serialNumber: item.usb_hub });
-    if (item.keyboard) returnedItems.push({ name: "Keyboard", qty: 1, serialNumber: item.keyboard });
-    if (item.mouse) returnedItems.push({ name: "Mouse", qty: 1, serialNumber: item.mouse });
-    if (item.scanner) returnedItems.push({ name: "Scanner", qty: 1, serialNumber: item.scanner });
-
-    const formatDate = (dateString: string) => {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
-    };
 
     const printContent = `
       <!DOCTYPE html>
@@ -242,14 +246,115 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-7 w-7 p-0"
-      onClick={handlePrint}
-      title="Print Receiving Report"
-    >
-      <Printer className="h-3.5 w-3.5" />
-    </Button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0"
+          title="Preview Report"
+        >
+          <Eye className="h-3.5 w-3.5" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Print Preview - Return Receipt</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6 p-6 bg-background border rounded-lg">
+          <div className="text-sm">
+            Kindly <strong>format</strong> change the return data "<strong>{formatDate(item.return_date)}</strong>"
+          </div>
+
+          <div>
+            <div className="font-semibold text-base mb-2">Item returned</div>
+            <div className="border-b-2 border-foreground w-8 mb-4"></div>
+
+            <div className="border rounded-md overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="border p-2 text-left w-[10%]">No</th>
+                    <th className="border p-2 text-left w-[40%]">Item Name</th>
+                    <th className="border p-2 text-left w-[15%]">QTY</th>
+                    <th className="border p-2 text-left w-[35%]">Serial Number</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {returnedItems.length > 0 ? (
+                    returnedItems.map((item, index) => (
+                      <tr key={index}>
+                        <td className="border p-2">{index + 1}</td>
+                        <td className="border p-2">{item.name}</td>
+                        <td className="border p-2">{item.qty}</td>
+                        <td className="border p-2">{item.serialNumber}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="border p-2 text-center text-muted-foreground">
+                        No items returned
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div className="font-semibold mb-2">Remark :</div>
+            <div className="text-sm min-h-[40px]">{item.remark || ''}</div>
+          </div>
+
+          <div className="font-medium">Shop Closed</div>
+
+          <div className="grid grid-cols-2 gap-8 mt-12">
+            <div>
+              <div className="mb-2">
+                <span className="text-sm">Sign</span>
+                <div className="border-b border-foreground min-h-[30px] mb-4">
+                  {item.receiver_signature || ''}
+                </div>
+              </div>
+              <div>
+                <span className="text-sm">Name:</span>
+                <div className="border-b border-foreground min-h-[25px] mb-2"></div>
+                <span className="text-xs text-muted-foreground">
+                  (Shop Support Depositor <span className="text-blue-600">Signature</span>)
+                </span>
+              </div>
+            </div>
+            <div>
+              <div className="mb-2">
+                <span className="text-sm">Sign</span>
+                <div className="border-b border-foreground min-h-[30px] mb-4"></div>
+              </div>
+              <div>
+                <span className="text-sm">Name</span>
+                <div className="border-b border-foreground min-h-[25px] mb-2"></div>
+                <span className="text-xs text-muted-foreground">(IT Store Receiver)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-4 border-t text-center text-xs text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} All Rights Reserved | Powered by <strong>Hammad Jahangir</strong></p>
+            <p className="mt-2 text-[10px]">Report ID: {item.id}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={() => { handlePrint(); setOpen(false); }}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
