@@ -37,6 +37,14 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
     if (item.mouse) returnedItems.push({ name: "Mouse", qty: 1, serialNumber: item.mouse });
     if (item.scanner) returnedItems.push({ name: "Scanner", qty: 1, serialNumber: item.scanner });
 
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
+
     const printContent = `
       <!DOCTYPE html>
       <html>
@@ -48,77 +56,98 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
               padding: 40px;
               max-width: 800px;
               margin: 0 auto;
+              color: #000;
+              background: #fff;
             }
-            .header {
-              text-align: center;
+            .notice {
               margin-bottom: 30px;
-              border-bottom: 2px solid #333;
-              padding-bottom: 20px;
-            }
-            .header h1 {
-              margin: 0;
-              font-size: 24px;
-            }
-            .section {
-              margin-bottom: 20px;
+              font-size: 14px;
+              line-height: 1.6;
             }
             .section-title {
               font-weight: bold;
-              font-size: 16px;
-              margin-bottom: 10px;
-              color: #333;
-            }
-            .info-row {
-              display: flex;
-              margin-bottom: 8px;
-            }
-            .label {
-              font-weight: bold;
-              width: 150px;
-            }
-            .value {
-              flex: 1;
+              font-size: 15px;
+              margin-bottom: 15px;
+              margin-top: 25px;
             }
             .items-table {
               width: 100%;
               border-collapse: collapse;
               margin-top: 10px;
+              margin-bottom: 30px;
+            }
+            .items-table th,
+            .items-table td {
+              border: 1px solid #000;
+              padding: 8px;
+              text-align: left;
+              font-size: 13px;
             }
             .items-table th {
               background-color: #f5f5f5;
-              padding: 10px;
-              text-align: left;
-              border: 1px solid #ddd;
+              font-weight: bold;
+            }
+            .remark-section {
+              margin-top: 20px;
+              margin-bottom: 30px;
+            }
+            .remark-label {
               font-weight: bold;
               font-size: 14px;
+              margin-bottom: 10px;
             }
-            .items-table td {
-              padding: 10px;
-              border: 1px solid #ddd;
+            .remark-content {
+              min-height: 40px;
               font-size: 13px;
             }
-            .items-table tr:nth-child(even) {
-              background-color: #fafafa;
+            .status-text {
+              margin-top: 20px;
+              margin-bottom: 40px;
+              font-size: 14px;
             }
             .signature-section {
-              margin-top: 50px;
               display: flex;
               justify-content: space-between;
+              margin-top: 50px;
+              margin-bottom: 60px;
             }
             .signature-box {
               width: 45%;
             }
             .signature-line {
-              border-top: 1px solid #333;
-              margin-top: 50px;
-              padding-top: 10px;
-              text-align: center;
+              margin-bottom: 20px;
+            }
+            .signature-label {
+              display: block;
+              margin-bottom: 5px;
+              font-size: 13px;
+            }
+            .signature-input {
+              border-bottom: 1px solid #000;
+              min-height: 30px;
+              margin-bottom: 15px;
+            }
+            .name-label {
+              display: block;
+              margin-bottom: 5px;
+              font-size: 13px;
+            }
+            .name-input {
+              border-bottom: 1px solid #000;
+              min-height: 25px;
+              margin-bottom: 10px;
+            }
+            .role-label {
+              font-size: 12px;
+              display: block;
             }
             .footer {
-              margin-top: 50px;
+              margin-top: 60px;
               text-align: center;
-              font-size: 12px;
+              font-size: 11px;
               color: #666;
+              border-top: 1px solid #ddd;
+              padding-top: 20px;
             }
             @media print {
               body {
@@ -128,84 +157,72 @@ export const PrintReceiving = ({ item }: PrintReceivingProps) => {
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>RETURN ITEM RECEIVING REPORT</h1>
-            <p>Shop Return Management System</p>
+          <div class="notice">
+            Kindly <strong>format</strong> change the return data "<strong>${formatDate(item.return_date)}</strong>"
           </div>
 
-          <div class="section">
-            <div class="section-title">Store Information</div>
-            <div class="info-row">
-              <span class="label">Brand Name:</span>
-              <span class="value">${item.brand_name}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Store Code:</span>
-              <span class="value">${item.store_code || "N/A"}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Shop Location:</span>
-              <span class="value">${item.shop_location || "N/A"}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Return Date:</span>
-              <span class="value">${new Date(item.return_date).toLocaleDateString()}</span>
-            </div>
+          <div class="section-title">Item returned</div>
+          <div style="border-bottom: 1px solid #000; width: 30px; margin-bottom: 15px;"></div>
+
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th style="width: 10%;">No</th>
+                <th style="width: 40%;">Item Name</th>
+                <th style="width: 15%;">QTY</th>
+                <th style="width: 35%;">Serial Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${returnedItems.length > 0 
+                ? returnedItems.map((item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.serialNumber}</td>
+                  </tr>
+                `).join('')
+                : '<tr><td colspan="4" style="text-align: center;">No items returned</td></tr>'
+              }
+            </tbody>
+          </table>
+
+          <div class="remark-section">
+            <div class="remark-label">Remark :</div>
+            <div class="remark-content">${item.remark || ''}</div>
           </div>
 
-          <div class="section">
-            <div class="section-title">Items Returned</div>
-            <table class="items-table">
-              <thead>
-                <tr>
-                  <th style="width: 10%;">No.</th>
-                  <th style="width: 40%;">Item Name</th>
-                  <th style="width: 15%;">QTY</th>
-                  <th style="width: 35%;">Serial Number</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${returnedItems.length > 0 
-                  ? returnedItems.map((item, index) => `
-                    <tr>
-                      <td>${index + 1}</td>
-                      <td>${item.name}</td>
-                      <td>${item.qty}</td>
-                      <td>${item.serialNumber}</td>
-                    </tr>
-                  `).join('')
-                  : '<tr><td colspan="4" style="text-align: center;">No items returned</td></tr>'
-                }
-              </tbody>
-            </table>
-          </div>
-
-          ${item.remark ? `
-          <div class="section">
-            <div class="section-title">Remarks</div>
-            <div class="value">${item.remark}</div>
-          </div>
-          ` : ''}
+          <div class="status-text">Shop Closed</div>
 
           <div class="signature-section">
             <div class="signature-box">
               <div class="signature-line">
-                ${item.receiver_signature || ''}
-                <br/>
-                Shop Manager Signature
+                <span class="signature-label">Sign</span>
+                <div class="signature-input">${item.receiver_signature || ''}</div>
+              </div>
+              <div>
+                <span class="name-label">Name:</span>
+                <div class="name-input"></div>
+                <span class="role-label">(Shop Support Depositor <span style="color: blue;">Signature</span>)</span>
               </div>
             </div>
             <div class="signature-box">
               <div class="signature-line">
-                <br/>
-                Warehouse Receiver Signature
+                <span class="signature-label">Sign</span>
+                <div class="signature-input"></div>
+              </div>
+              <div>
+                <span class="name-label">Name</span>
+                <div class="name-input"></div>
+                <span class="role-label">(IT Store Receiver)</span>
               </div>
             </div>
           </div>
 
           <div class="footer">
-            <p>This is an automatically generated receiving report</p>
-            <p>Report ID: ${item.id}</p>
+            <p>&copy; ${new Date().getFullYear()} All Rights Reserved | Powered by <strong>Hammad Jahangir</strong></p>
+            <p style="margin-top: 10px; font-size: 10px;">Report ID: ${item.id}</p>
           </div>
 
           <script>
