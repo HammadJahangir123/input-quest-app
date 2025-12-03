@@ -3,10 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Edit, Download } from "lucide-react";
+import { Trash2, Edit, Download, Check, X } from "lucide-react";
 import { toast } from "sonner";
-import { PrintReceiving } from "./PrintReceiving";
-import { EditReturnItemForm } from "./EditReturnItemForm";
+import { EditLaptopReturnForm } from "./EditLaptopReturnForm";
 import * as XLSX from "xlsx";
 import {
   AlertDialog,
@@ -19,53 +18,46 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface ReturnItem {
+interface LaptopReturn {
   id: string;
   return_date: string;
-  brand_name: string;
+  brand: string;
   store_code: string | null;
-  shop_location: string | null;
-  canon_printer_sn: string | null;
-  canon_printer_model: string | null;
-  receipt_printer_sn: string | null;
-  receipt_printer_model: string | null;
-  usb_hub: string | null;
-  keyboard: string | null;
-  mouse: string | null;
-  scanner: string | null;
-  other_1: string | null;
-  other_2: string | null;
-  receiver_signature: string | null;
+  location: string | null;
+  laptop_model: string;
+  serial_number: string;
+  has_charger: boolean;
   remark: string | null;
   created_at: string;
   updated_at: string;
   user_id: string;
 }
 
-interface ReturnItemsTableProps {
+interface LaptopReturnsTableProps {
   searchQuery: string;
+  refreshKey?: number;
 }
 
-export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
-  const [items, setItems] = useState<ReturnItem[]>([]);
+export const LaptopReturnsTable = ({ searchQuery, refreshKey }: LaptopReturnsTableProps) => {
+  const [items, setItems] = useState<LaptopReturn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<ReturnItem | null>(null);
+  const [editItem, setEditItem] = useState<LaptopReturn | null>(null);
 
   useEffect(() => {
     fetchItems();
-  }, [searchQuery]);
+  }, [searchQuery, refreshKey]);
 
   const fetchItems = async () => {
     setIsLoading(true);
     try {
       let query = supabase
-        .from("return_items")
+        .from("laptop_returns")
         .select("*")
         .order("return_date", { ascending: false });
 
       if (searchQuery) {
-        query = query.or(`brand_name.ilike.%${searchQuery}%,store_code.ilike.%${searchQuery}%,shop_location.ilike.%${searchQuery}%,receiver_signature.ilike.%${searchQuery}%,remark.ilike.%${searchQuery}%`);
+        query = query.or(`brand.ilike.%${searchQuery}%,store_code.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%,laptop_model.ilike.%${searchQuery}%,serial_number.ilike.%${searchQuery}%,remark.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query;
@@ -73,7 +65,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
       if (error) throw error;
       setItems(data || []);
     } catch (error) {
-      toast.error("Failed to load return items");
+      toast.error("Failed to load laptop returns");
     } finally {
       setIsLoading(false);
     }
@@ -84,16 +76,16 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
 
     try {
       const { error } = await supabase
-        .from("return_items")
+        .from("laptop_returns")
         .delete()
         .eq("id", deleteId);
 
       if (error) throw error;
 
       setItems(items.filter((item) => item.id !== deleteId));
-      toast.success("Return item deleted successfully");
+      toast.success("Laptop return deleted successfully");
     } catch (error) {
-      toast.error("Failed to delete return item");
+      toast.error("Failed to delete laptop return");
     } finally {
       setDeleteId(null);
     }
@@ -102,27 +94,19 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
   const handleExportToExcel = () => {
     const exportData = items.map(item => ({
       "Return Date": new Date(item.return_date).toLocaleDateString(),
-      "Brand": item.brand_name,
+      "Brand": item.brand,
       "Store Code": item.store_code || "-",
-      "Location": item.shop_location || "-",
-      "Canon S/N": item.canon_printer_sn || "-",
-      "Canon Model": item.canon_printer_model || "-",
-      "Receipt S/N": item.receipt_printer_sn || "-",
-      "Receipt Model": item.receipt_printer_model || "-",
-      "USB Hub": item.usb_hub || "-",
-      "Keyboard": item.keyboard || "-",
-      "Mouse": item.mouse || "-",
-      "Scanner": item.scanner || "-",
-      "Other 1": item.other_1 || "-",
-      "Other 2": item.other_2 || "-",
-      "Receiver": item.receiver_signature || "-",
+      "Location": item.location || "-",
+      "Laptop Model": item.laptop_model,
+      "Serial Number": item.serial_number,
+      "Charger": item.has_charger ? "Yes" : "No",
       "Remark": item.remark || "-",
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Return Items");
-    XLSX.writeFile(wb, `return_items_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, "Laptop Returns");
+    XLSX.writeFile(wb, `laptop_returns_${new Date().toISOString().split('T')[0]}.xlsx`);
     toast.success("Exported to Excel successfully");
   };
 
@@ -130,7 +114,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
     return (
       <Card>
         <CardContent className="py-8">
-          <p className="text-center text-muted-foreground">Loading return items...</p>
+          <p className="text-center text-muted-foreground">Loading laptop returns...</p>
         </CardContent>
       </Card>
     );
@@ -141,7 +125,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
       <Card>
         <CardContent className="py-8">
           <p className="text-center text-muted-foreground">
-            {searchQuery ? "No return items found matching your search" : "No return items yet. Add your first return item above."}
+            {searchQuery ? "No laptop returns found matching your search" : "No laptop returns yet. Add your first laptop return above."}
           </p>
         </CardContent>
       </Card>
@@ -153,7 +137,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold">Return Items Overview</CardTitle>
+            <CardTitle className="text-base font-semibold">Laptop Returns Overview</CardTitle>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleExportToExcel}>
                 <Download className="h-3.5 w-3.5 mr-2" />
@@ -172,17 +156,9 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
                   <TableHead className="h-9 text-xs font-semibold">Brand</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Store Code</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Location</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Canon S/N</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Canon Model</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Receipt S/N</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Receipt Model</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">USB Hub</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Keyboard</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Mouse</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Scanner</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Other 1</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Other 2</TableHead>
-                  <TableHead className="h-9 text-xs font-semibold">Receiver</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Laptop Model</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Serial Number</TableHead>
+                  <TableHead className="h-9 text-xs font-semibold">Charger</TableHead>
                   <TableHead className="h-9 text-xs font-semibold">Remark</TableHead>
                   <TableHead className="h-9 text-xs font-semibold text-right">Actions</TableHead>
                 </TableRow>
@@ -196,24 +172,25 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
                     <TableCell className="whitespace-nowrap text-xs py-2">
                       {new Date(item.return_date).toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="text-xs py-2 font-medium">{item.brand_name}</TableCell>
+                    <TableCell className="text-xs py-2 font-medium">{item.brand}</TableCell>
                     <TableCell className="text-xs py-2">{item.store_code || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.shop_location || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.canon_printer_sn || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.canon_printer_model || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.receipt_printer_sn || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.receipt_printer_model || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.usb_hub || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.keyboard || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.mouse || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.scanner || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.other_1 || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.other_2 || "-"}</TableCell>
-                    <TableCell className="text-xs py-2">{item.receiver_signature || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.location || "-"}</TableCell>
+                    <TableCell className="text-xs py-2">{item.laptop_model}</TableCell>
+                    <TableCell className="text-xs py-2">{item.serial_number}</TableCell>
+                    <TableCell className="text-xs py-2">
+                      {item.has_charger ? (
+                        <span className="flex items-center gap-1 text-green-600">
+                          <Check className="h-3.5 w-3.5" /> Yes
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-red-600">
+                          <X className="h-3.5 w-3.5" /> No
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-xs py-2">{item.remark || "-"}</TableCell>
                     <TableCell className="text-right py-2">
                       <div className="flex items-center justify-end gap-1">
-                        <PrintReceiving item={item} />
                         <Button
                           variant="ghost"
                           size="sm"
@@ -242,7 +219,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
         </CardContent>
       </Card>
 
-      <EditReturnItemForm
+      <EditLaptopReturnForm
         item={editItem}
         open={!!editItem}
         onOpenChange={(open) => !open && setEditItem(null)}
@@ -254,7 +231,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this return item.
+              This action cannot be undone. This will permanently delete this laptop return.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

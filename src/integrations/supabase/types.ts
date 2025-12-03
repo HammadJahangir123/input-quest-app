@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      laptop_returns: {
+        Row: {
+          brand: string
+          created_at: string
+          has_charger: boolean
+          id: string
+          laptop_model: string
+          location: string | null
+          remark: string | null
+          return_date: string
+          serial_number: string
+          store_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand: string
+          created_at?: string
+          has_charger?: boolean
+          id?: string
+          laptop_model: string
+          location?: string | null
+          remark?: string | null
+          return_date: string
+          serial_number: string
+          store_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string
+          created_at?: string
+          has_charger?: boolean
+          id?: string
+          laptop_model?: string
+          location?: string | null
+          remark?: string | null
+          return_date?: string
+          serial_number?: string
+          store_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -38,6 +83,7 @@ export type Database = {
       return_items: {
         Row: {
           brand_name: string
+          canon_printer_model: string | null
           canon_printer_sn: string | null
           created_at: string
           id: string
@@ -45,6 +91,7 @@ export type Database = {
           mouse: string | null
           other_1: string | null
           other_2: string | null
+          receipt_printer_model: string | null
           receipt_printer_sn: string | null
           receiver_signature: string | null
           remark: string | null
@@ -58,6 +105,7 @@ export type Database = {
         }
         Insert: {
           brand_name: string
+          canon_printer_model?: string | null
           canon_printer_sn?: string | null
           created_at?: string
           id?: string
@@ -65,6 +113,7 @@ export type Database = {
           mouse?: string | null
           other_1?: string | null
           other_2?: string | null
+          receipt_printer_model?: string | null
           receipt_printer_sn?: string | null
           receiver_signature?: string | null
           remark?: string | null
@@ -78,6 +127,7 @@ export type Database = {
         }
         Update: {
           brand_name?: string
+          canon_printer_model?: string | null
           canon_printer_sn?: string | null
           created_at?: string
           id?: string
@@ -85,6 +135,7 @@ export type Database = {
           mouse?: string | null
           other_1?: string | null
           other_2?: string | null
+          receipt_printer_model?: string | null
           receipt_printer_sn?: string | null
           receiver_signature?: string | null
           remark?: string | null

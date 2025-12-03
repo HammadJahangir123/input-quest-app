@@ -13,7 +13,9 @@ const returnItemSchema = z.object({
   store_code: z.string().trim().max(100).optional(),
   shop_location: z.string().trim().max(255).optional(),
   canon_printer_sn: z.string().trim().max(100).optional(),
+  canon_printer_model: z.string().trim().max(100).optional(),
   receipt_printer_sn: z.string().trim().max(100).optional(),
+  receipt_printer_model: z.string().trim().max(100).optional(),
   usb_hub: z.string().trim().max(100).optional(),
   keyboard: z.string().trim().max(100).optional(),
   mouse: z.string().trim().max(100).optional(),
@@ -31,7 +33,9 @@ interface ReturnItem {
   store_code: string | null;
   shop_location: string | null;
   canon_printer_sn: string | null;
+  canon_printer_model: string | null;
   receipt_printer_sn: string | null;
+  receipt_printer_model: string | null;
   usb_hub: string | null;
   keyboard: string | null;
   mouse: string | null;
@@ -57,7 +61,9 @@ export const EditReturnItemForm = ({ item, open, onOpenChange, onSuccess }: Edit
     store_code: "",
     shop_location: "",
     canon_printer_sn: "",
+    canon_printer_model: "",
     receipt_printer_sn: "",
+    receipt_printer_model: "",
     usb_hub: "",
     keyboard: "",
     mouse: "",
@@ -76,7 +82,9 @@ export const EditReturnItemForm = ({ item, open, onOpenChange, onSuccess }: Edit
         store_code: item.store_code || "",
         shop_location: item.shop_location || "",
         canon_printer_sn: item.canon_printer_sn || "",
+        canon_printer_model: item.canon_printer_model || "",
         receipt_printer_sn: item.receipt_printer_sn || "",
+        receipt_printer_model: item.receipt_printer_model || "",
         usb_hub: item.usb_hub || "",
         keyboard: item.keyboard || "",
         mouse: item.mouse || "",
@@ -106,7 +114,9 @@ export const EditReturnItemForm = ({ item, open, onOpenChange, onSuccess }: Edit
           store_code: validated.store_code || null,
           shop_location: validated.shop_location || null,
           canon_printer_sn: validated.canon_printer_sn || null,
+          canon_printer_model: validated.canon_printer_model || null,
           receipt_printer_sn: validated.receipt_printer_sn || null,
+          receipt_printer_model: validated.receipt_printer_model || null,
           usb_hub: validated.usb_hub || null,
           keyboard: validated.keyboard || null,
           mouse: validated.mouse || null,
@@ -205,11 +215,33 @@ export const EditReturnItemForm = ({ item, open, onOpenChange, onSuccess }: Edit
             </div>
 
             <div className="space-y-1.5">
+              <Label htmlFor="edit_canon_printer_model" className="text-xs font-medium">Canon Printer Model</Label>
+              <Input
+                id="edit_canon_printer_model"
+                value={formData.canon_printer_model}
+                onChange={(e) => handleChange("canon_printer_model", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="edit_receipt_printer_sn" className="text-xs font-medium">Receipt Printer S/N</Label>
               <Input
                 id="edit_receipt_printer_sn"
                 value={formData.receipt_printer_sn}
                 onChange={(e) => handleChange("receipt_printer_sn", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit_receipt_printer_model" className="text-xs font-medium">Receipt Printer Model</Label>
+              <Input
+                id="edit_receipt_printer_model"
+                value={formData.receipt_printer_model}
+                onChange={(e) => handleChange("receipt_printer_model", e.target.value)}
                 disabled={isLoading}
                 className="h-9"
               />

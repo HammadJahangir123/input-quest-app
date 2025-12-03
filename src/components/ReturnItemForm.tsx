@@ -13,7 +13,9 @@ const returnItemSchema = z.object({
   store_code: z.string().trim().max(100).optional(),
   shop_location: z.string().trim().max(255).optional(),
   canon_printer_sn: z.string().trim().max(100).optional(),
+  canon_printer_model: z.string().trim().max(100).optional(),
   receipt_printer_sn: z.string().trim().max(100).optional(),
+  receipt_printer_model: z.string().trim().max(100).optional(),
   usb_hub: z.string().trim().max(100).optional(),
   keyboard: z.string().trim().max(100).optional(),
   mouse: z.string().trim().max(100).optional(),
@@ -37,7 +39,9 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
     store_code: "",
     shop_location: "",
     canon_printer_sn: "",
+    canon_printer_model: "",
     receipt_printer_sn: "",
+    receipt_printer_model: "",
     usb_hub: "",
     keyboard: "",
     mouse: "",
@@ -68,7 +72,9 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
           store_code: validated.store_code || null,
           shop_location: validated.shop_location || null,
           canon_printer_sn: validated.canon_printer_sn || null,
+          canon_printer_model: validated.canon_printer_model || null,
           receipt_printer_sn: validated.receipt_printer_sn || null,
+          receipt_printer_model: validated.receipt_printer_model || null,
           usb_hub: validated.usb_hub || null,
           keyboard: validated.keyboard || null,
           mouse: validated.mouse || null,
@@ -89,7 +95,9 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
         store_code: "",
         shop_location: "",
         canon_printer_sn: "",
+        canon_printer_model: "",
         receipt_printer_sn: "",
+        receipt_printer_model: "",
         usb_hub: "",
         keyboard: "",
         mouse: "",
@@ -186,6 +194,18 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
             </div>
 
             <div className="space-y-1.5">
+              <Label htmlFor="canon_printer_model" className="text-xs font-medium">Canon Printer Model</Label>
+              <Input
+                id="canon_printer_model"
+                value={formData.canon_printer_model}
+                onChange={(e) => handleChange("canon_printer_model", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+                placeholder="e.g., PIXMA G3010"
+              />
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="receipt_printer_sn" className="text-xs font-medium">Receipt Printer S/N</Label>
               <Input
                 id="receipt_printer_sn"
@@ -193,6 +213,18 @@ export const ReturnItemForm = ({ onSuccess, onCancel }: ReturnItemFormProps) => 
                 onChange={(e) => handleChange("receipt_printer_sn", e.target.value)}
                 disabled={isLoading}
                 className="h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="receipt_printer_model" className="text-xs font-medium">Receipt Printer Model</Label>
+              <Input
+                id="receipt_printer_model"
+                value={formData.receipt_printer_model}
+                onChange={(e) => handleChange("receipt_printer_model", e.target.value)}
+                disabled={isLoading}
+                className="h-9"
+                placeholder="e.g., TM-T82III"
               />
             </div>
 

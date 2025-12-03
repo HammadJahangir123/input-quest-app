@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import DashboardOverview from "./pages/DashboardOverview";
 import Dashboard from "./pages/Dashboard";
+import LaptopReturns from "./pages/LaptopReturns";
 import Reports from "./pages/Reports";
 import Analytics from "./pages/Analytics";
 import UserManagement from "./pages/UserManagement";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/overview" element={<DashboardOverview />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/laptop-returns" element={<LaptopReturns />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/users" element={<UserManagement />} />
