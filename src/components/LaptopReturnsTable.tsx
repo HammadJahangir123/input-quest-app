@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Edit, Download, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { EditLaptopReturnForm } from "./EditLaptopReturnForm";
+import { PrintLaptopReceiving } from "./PrintLaptopReceiving";
 import * as XLSX from "xlsx";
 import {
   AlertDialog,
@@ -191,6 +192,7 @@ export const LaptopReturnsTable = ({ searchQuery, refreshKey }: LaptopReturnsTab
                     <TableCell className="text-xs py-2">{item.remark || "-"}</TableCell>
                     <TableCell className="text-right py-2">
                       <div className="flex items-center justify-end gap-1">
+                        <PrintLaptopReceiving item={item} />
                         <Button
                           variant="ghost"
                           size="sm"

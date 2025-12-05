@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, TrendingUp, Calendar, FileText } from "lucide-react";
+import { Package, TrendingUp, Calendar, FileText, Laptop, Battery, BatteryWarning, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ReportStats {
   totalReturns: number;
@@ -11,8 +12,19 @@ interface ReportStats {
   byBrand: { brand_name: string; count: number }[];
 }
 
+interface LaptopReportStats {
+  totalLaptops: number;
+  thisMonth: number;
+  thisWeek: number;
+  withCharger: number;
+  withoutCharger: number;
+  byBrand: { brand: string; count: number }[];
+  byLocation: { location: string; count: number }[];
+}
+
 const Reports = () => {
   const [stats, setStats] = useState<ReportStats | null>(null);
+  const [laptopStats, setLaptopStats] = useState<LaptopReportStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +33,7 @@ const Reports = () => {
 
   const fetchReportData = async () => {
     try {
+      // Fetch return items
       const { data: allReturns, error } = await supabase
         .from("return_items")
         .select("*");
@@ -56,6 +69,59 @@ const Reports = () => {
           byBrand,
         });
       }
+
+      // Fetch laptop returns
+      const { data: allLaptops, error: laptopError } = await supabase
+        .from("laptop_returns")
+        .select("*");
+
+      if (laptopError) throw laptopError;
+
+      if (allLaptops) {
+        const now = new Date();
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+
+        const thisMonth = allLaptops.filter(
+          (item) => new Date(item.created_at) >= firstDayOfMonth
+        ).length;
+
+        const thisWeek = allLaptops.filter(
+          (item) => new Date(item.created_at) >= firstDayOfWeek
+        ).length;
+
+        const withCharger = allLaptops.filter((item) => item.has_charger).length;
+        const withoutCharger = allLaptops.filter((item) => !item.has_charger).length;
+
+        const brandCounts = allLaptops.reduce((acc, item) => {
+          acc[item.brand] = (acc[item.brand] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
+        const byBrand = Object.entries(brandCounts)
+          .map(([brand, count]) => ({ brand, count }))
+          .sort((a, b) => b.count - a.count);
+
+        const locationCounts = allLaptops.reduce((acc, item) => {
+          const loc = item.location || 'Unknown';
+          acc[loc] = (acc[loc] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
+        const byLocation = Object.entries(locationCounts)
+          .map(([location, count]) => ({ location, count }))
+          .sort((a, b) => b.count - a.count);
+
+        setLaptopStats({
+          totalLaptops: allLaptops.length,
+          thisMonth,
+          thisWeek,
+          withCharger,
+          withoutCharger,
+          byBrand,
+          byLocation,
+        });
+      }
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -78,74 +144,184 @@ const Reports = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Return Items Report</h1>
+        <h1 className="text-2xl font-semibold">Reports</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Returns
-            </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalReturns || 0}</div>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="return-items" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="return-items">Return Items</TabsTrigger>
+          <TabsTrigger value="laptop-returns">Laptop Returns</TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              This Month
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.thisMonth || 0}</div>
-          </CardContent>
-        </Card>
+        <TabsContent value="return-items" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Returns
+                </CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalReturns || 0}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              This Week
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.thisWeek || 0}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  This Month
+                </CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.thisMonth || 0}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Unique Brands
-            </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.byBrand.length || 0}</div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  This Week
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.thisWeek || 0}</div>
+              </CardContent>
+            </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Returns by Brand</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {stats?.byBrand.map((brand) => (
-              <div key={brand.brand_name} className="flex items-center justify-between border-b pb-2">
-                <span className="font-medium">{brand.brand_name}</span>
-                <span className="text-muted-foreground">{brand.count} returns</span>
-              </div>
-            ))}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Unique Brands
+                </CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.byBrand.length || 0}</div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Returns by Brand</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {stats?.byBrand.map((brand) => (
+                  <div key={brand.brand_name} className="flex items-center justify-between border-b pb-2">
+                    <span className="font-medium">{brand.brand_name}</span>
+                    <span className="text-muted-foreground">{brand.count} returns</span>
+                  </div>
+                ))}
+                {(!stats?.byBrand || stats.byBrand.length === 0) && (
+                  <p className="text-muted-foreground text-center py-4">No data available</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="laptop-returns" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Laptops
+                </CardTitle>
+                <Laptop className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{laptopStats?.totalLaptops || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  This Month
+                </CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{laptopStats?.thisMonth || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  With Charger
+                </CardTitle>
+                <Battery className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{laptopStats?.withCharger || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Without Charger
+                </CardTitle>
+                <BatteryWarning className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{laptopStats?.withoutCharger || 0}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Laptop className="h-5 w-5" />
+                  Laptops by Brand
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {laptopStats?.byBrand.map((brand) => (
+                    <div key={brand.brand} className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">{brand.brand}</span>
+                      <span className="text-muted-foreground">{brand.count} laptops</span>
+                    </div>
+                  ))}
+                  {(!laptopStats?.byBrand || laptopStats.byBrand.length === 0) && (
+                    <p className="text-muted-foreground text-center py-4">No data available</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Laptops by Location
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {laptopStats?.byLocation.map((loc) => (
+                    <div key={loc.location} className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">{loc.location}</span>
+                      <span className="text-muted-foreground">{loc.count} laptops</span>
+                    </div>
+                  ))}
+                  {(!laptopStats?.byLocation || laptopStats.byLocation.length === 0) && (
+                    <p className="text-muted-foreground text-center py-4">No data available</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
