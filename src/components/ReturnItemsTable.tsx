@@ -7,6 +7,7 @@ import { Trash2, Edit, Download } from "lucide-react";
 import { toast } from "sonner";
 import { PrintReceiving } from "./PrintReceiving";
 import { EditReturnItemForm } from "./EditReturnItemForm";
+import { TableSkeleton } from "./ui/loading-skeleton";
 import * as XLSX from "xlsx";
 import {
   AlertDialog,
@@ -127,13 +128,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
   };
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="py-8">
-          <p className="text-center text-muted-foreground">Loading return items...</p>
-        </CardContent>
-      </Card>
-    );
+    return <TableSkeleton />;
   }
 
   if (items.length === 0) {
