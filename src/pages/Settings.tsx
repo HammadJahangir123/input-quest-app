@@ -4,12 +4,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Settings as SettingsIcon, User, Lock, Bell } from "lucide-react";
+import { Settings as SettingsIcon, User, Lock, Bell, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { useTheme } from "next-themes";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Settings = () => {
+  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     full_name: "",
@@ -161,6 +164,53 @@ const Settings = () => {
               checked={emailNotifications}
               onCheckedChange={setEmailNotifications}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sun className="h-5 w-5" />
+            Appearance
+          </CardTitle>
+          <CardDescription>
+            Customize the look and feel of the application.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Theme</Label>
+              <p className="text-sm text-muted-foreground">
+                Select your preferred theme mode
+              </p>
+            </div>
+            <Select value={theme} onValueChange={setTheme}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Select theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">
+                  <div className="flex items-center gap-2">
+                    <Sun className="h-4 w-4" />
+                    Light
+                  </div>
+                </SelectItem>
+                <SelectItem value="dark">
+                  <div className="flex items-center gap-2">
+                    <Moon className="h-4 w-4" />
+                    Dark
+                  </div>
+                </SelectItem>
+                <SelectItem value="system">
+                  <div className="flex items-center gap-2">
+                    <Monitor className="h-4 w-4" />
+                    System
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>

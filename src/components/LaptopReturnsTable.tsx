@@ -7,6 +7,7 @@ import { Trash2, Edit, Download, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { EditLaptopReturnForm } from "./EditLaptopReturnForm";
 import { PrintLaptopReceiving } from "./PrintLaptopReceiving";
+import { TableSkeleton } from "./ui/loading-skeleton";
 import * as XLSX from "xlsx";
 import {
   AlertDialog,
@@ -112,13 +113,7 @@ export const LaptopReturnsTable = ({ searchQuery, refreshKey }: LaptopReturnsTab
   };
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="py-8">
-          <p className="text-center text-muted-foreground">Loading laptop returns...</p>
-        </CardContent>
-      </Card>
-    );
+    return <TableSkeleton />;
   }
 
   if (items.length === 0) {
