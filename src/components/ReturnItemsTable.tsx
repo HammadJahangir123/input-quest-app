@@ -43,11 +43,19 @@ interface ReturnItem {
   user_id: string;
 }
 
-interface ReturnItemsTableProps {
-  searchQuery: string;
+interface FilterValues {
+  brandName: string;
+  storeCode: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
-export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
+interface ReturnItemsTableProps {
+  searchQuery: string;
+  filters?: FilterValues;
+}
+
+export const ReturnItemsTable = ({ searchQuery, filters }: ReturnItemsTableProps) => {
   const [items, setItems] = useState<ReturnItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -55,7 +63,7 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
 
   useEffect(() => {
     fetchItems();
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
   const fetchItems = async () => {
     setIsLoading(true);
@@ -67,6 +75,20 @@ export const ReturnItemsTable = ({ searchQuery }: ReturnItemsTableProps) => {
 
       if (searchQuery) {
         query = query.or(`brand_name.ilike.%${searchQuery}%,store_code.ilike.%${searchQuery}%,shop_location.ilike.%${searchQuery}%,receiver_signature.ilike.%${searchQuery}%,remark.ilike.%${searchQuery}%`);
+      }
+
+      // Apply filters
+      if (filters?.brandName) {
+        query = query.eq("brand_name", filters.brandName);
+      }
+      if (filters?.storeCode) {
+        query = query.eq("store_code", filters.storeCode);
+      }
+      if (filters?.dateFrom) {
+        query = query.gte("return_date", filters.dateFrom);
+      }
+      if (filters?.dateTo) {
+        query = query.lte("return_date", filters.dateTo);
       }
 
       const { data, error } = await query;
