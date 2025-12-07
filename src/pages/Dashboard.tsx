@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Plus, Download, Upload, Filter, RefreshCw } from "lucide-react";
+import { LogOut, Plus, Download, Upload, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { ReturnItemForm } from "@/components/ReturnItemForm";
 import { ReturnItemsTable } from "@/components/ReturnItemsTable";
@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Separator } from "@/components/ui/separator";
+import { FilterPopover, FilterValues } from "@/components/FilterPopover";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [filters, setFilters] = useState<FilterValues>({
+    brandName: "",
+    storeCode: "",
+    dateFrom: "",
+    dateTo: "",
+  });
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -106,10 +113,7 @@ const Dashboard = () => {
                 <Upload className="h-4 w-4 mr-2" />
                 Import
               </Button>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
+              <FilterPopover filters={filters} onFiltersChange={setFilters} />
             </div>
           </div>
 
@@ -122,7 +126,7 @@ const Dashboard = () => {
               />
             )}
 
-            <ReturnItemsTable searchQuery={searchQuery} key={refreshKey} />
+            <ReturnItemsTable searchQuery={searchQuery} filters={filters} key={refreshKey} />
           </main>
 
           {/* Status Bar */}
