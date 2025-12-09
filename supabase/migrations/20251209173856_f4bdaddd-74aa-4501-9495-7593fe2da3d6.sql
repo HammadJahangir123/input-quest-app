@@ -1,0 +1,6 @@
+-- Add RLS policy to allow admins to view all profiles
+-- This fixes the admin client-side check warning by ensuring server-side protection
+CREATE POLICY "Admins can view all profiles"
+ON public.profiles
+FOR SELECT
+USING (has_role(auth.uid(), 'admin'::app_role));
